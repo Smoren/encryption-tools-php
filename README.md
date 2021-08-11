@@ -15,7 +15,7 @@ composer install
 
 ### Demo
 
-#### Symmetric encryption
+#### Symmetric encryption/decryption (openssl-based)
 ```php
 use Smoren\EncryptionTools\Helpers\SymmetricEncryptionHelper;
 
