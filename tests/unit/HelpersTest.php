@@ -8,12 +8,12 @@ use Smoren\EncryptionTools\Helpers\AsymmetricEncryptionHelper;
 use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
 use Smoren\EncryptionTools\Helpers\SymmetricEncryptionHelper;
 
-class CommonTest extends Unit
+class HelpersTest extends Unit
 {
     /**
      * @throws SymmetricEncryptionException
      */
-    public function testSymmetricEncryptionHelper()
+    public function testSymmetricEncryption()
     {
         $data = [1, 2, 3, "asd", "test" => "фыв"];
         $secretKey = uniqid();
@@ -52,7 +52,7 @@ class CommonTest extends Unit
     /**
      * @throws AsymmetricEncryptionException
      */
-    public function testAsymmetricEncryptionHelper()
+    public function testAsymmetricEncryption()
     {
         $data = [1, 2, 3, "asd", "test" => "фыв"];
 
