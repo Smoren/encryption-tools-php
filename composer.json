@@ -1,7 +1,7 @@
 {
   "name": "smoren/encryption-tools",
-  "description": "Tools for encryption/decryption using RSA key pair",
-  "keywords": ["encryption", "decryption", "rsa", "encrypt", "decrypt", "security"],
+  "description": "Tools for encryption/decryption and signing/verifying (wraps openssl lib)",
+  "keywords": ["encryption", "decryption", "rsa", "encrypt", "decrypt", "security", "openssl"],
   "license": "MIT",
   "authors": [
     {
