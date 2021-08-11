@@ -14,18 +14,19 @@ composer install
 ```
 
 ### Demo
+
 ```php
-use Smoren\EncryptionTools\EncryptionHelper;
+use Smoren\EncryptionTools\RsaEncryptionHelper;
 
 $data = ["some", "data" => "to", "encrypt"];
-[$privateKey, $publicKey] = EncryptionHelper::generateRsaPair();
-[$anotherPrivateKey, $anotherPublicKey] = EncryptionHelper::generateRsaPair();
+[$privateKey, $publicKey] = RsaEncryptionHelper::generateKeyPair();
+[$anotherPrivateKey, $anotherPublicKey] = RsaEncryptionHelper::generateKeyPair();
 
-$dataEncrypted = EncryptionHelper::encryptByPrivateKey($data, $privateKey);
-$dataDecrypted = EncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
+$dataEncrypted = RsaEncryptionHelper::encryptByPrivateKey($data, $privateKey);
+$dataDecrypted = RsaEncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
 print_r($dataDecrypted);
 
-$dataEncrypted = EncryptionHelper::encryptByPublicKey($data, $publicKey);
-$dataDecrypted = EncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
+$dataEncrypted = RsaEncryptionHelper::encryptByPublicKey($data, $publicKey);
+$dataDecrypted = RsaEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
 print_r($dataDecrypted);
 ```

@@ -3,55 +3,55 @@
 namespace app\tests\unit;
 
 use Codeception\Test\Unit;
-use Smoren\EncryptionTools\EncryptionHelper;
-use Smoren\EncryptionTools\Exceptions\EncryptionHelperException;
+use Smoren\EncryptionTools\RsaEncryptionHelper;
+use Smoren\EncryptionTools\Exceptions\RsaEncryptionHelperException;
 
 class CommonTest extends Unit
 {
     /**
-     * @throws EncryptionHelperException
+     * @throws RsaEncryptionHelperException
      */
     public function testHelper()
     {
         $data = [1, 2, 3, "asd", "test" => "фыв"];
 
-        [$privateKey, $publicKey] = EncryptionHelper::generateRsaPair();
-        [$anotherPrivateKey, $anotherPublicKey] = EncryptionHelper::generateRsaPair();
+        [$privateKey, $publicKey] = RsaEncryptionHelper::generateKeyPair();
+        [$anotherPrivateKey, $anotherPublicKey] = RsaEncryptionHelper::generateKeyPair();
 
-        $dataEncrypted = EncryptionHelper::encryptByPrivateKey($data, $privateKey);
-        $dataDecrypted = EncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
+        $dataEncrypted = RsaEncryptionHelper::encryptByPrivateKey($data, $privateKey);
+        $dataDecrypted = RsaEncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
         $this->assertEquals($data, $dataDecrypted);
 
         try {
-            EncryptionHelper::decryptByPublicKey($dataEncrypted, $anotherPublicKey);
+            RsaEncryptionHelper::decryptByPublicKey($dataEncrypted, $anotherPublicKey);
             $this->fail();
-        } catch(EncryptionHelperException $e) {
-            $this->assertEquals(EncryptionHelperException::INCORRECT_KEY, $e->getCode());
+        } catch(RsaEncryptionHelperException $e) {
+            $this->assertEquals(RsaEncryptionHelperException::INCORRECT_KEY, $e->getCode());
         }
 
         try {
-            EncryptionHelper::decryptByPublicKey($dataEncrypted, 'invalid_key_format_value');
+            RsaEncryptionHelper::decryptByPublicKey($dataEncrypted, 'invalid_key_format_value');
             $this->fail();
-        } catch(EncryptionHelperException $e) {
-            $this->assertEquals(EncryptionHelperException::INVALID_KEY_FORMAT, $e->getCode());
+        } catch(RsaEncryptionHelperException $e) {
+            $this->assertEquals(RsaEncryptionHelperException::INVALID_KEY_FORMAT, $e->getCode());
         }
 
-        $dataEncrypted = EncryptionHelper::encryptByPublicKey($data, $publicKey);
-        $dataDecrypted = EncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
+        $dataEncrypted = RsaEncryptionHelper::encryptByPublicKey($data, $publicKey);
+        $dataDecrypted = RsaEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
         $this->assertEquals($data, $dataDecrypted);
 
         try {
-            EncryptionHelper::decryptByPrivateKey($dataEncrypted, $anotherPrivateKey);
+            RsaEncryptionHelper::decryptByPrivateKey($dataEncrypted, $anotherPrivateKey);
             $this->fail();
-        } catch(EncryptionHelperException $e) {
-            $this->assertEquals(EncryptionHelperException::INCORRECT_KEY, $e->getCode());
+        } catch(RsaEncryptionHelperException $e) {
+            $this->assertEquals(RsaEncryptionHelperException::INCORRECT_KEY, $e->getCode());
         }
 
         try {
-            EncryptionHelper::decryptByPrivateKey($dataEncrypted, 'invalid_key_format_value');
+            RsaEncryptionHelper::decryptByPrivateKey($dataEncrypted, 'invalid_key_format_value');
             $this->fail();
-        } catch(EncryptionHelperException $e) {
-            $this->assertEquals(EncryptionHelperException::INVALID_KEY_FORMAT, $e->getCode());
+        } catch(RsaEncryptionHelperException $e) {
+            $this->assertEquals(RsaEncryptionHelperException::INVALID_KEY_FORMAT, $e->getCode());
         }
     }
 }
