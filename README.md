@@ -15,18 +15,35 @@ composer install
 
 ### Demo
 
+#### Symmetric encryption
 ```php
-use Smoren\EncryptionTools\Helpers\RsaEncryptionHelper;
+use Smoren\EncryptionTools\Helpers\SymmetricEncryptionHelper;
 
 $data = ["some", "data" => "to", "encrypt"];
-[$privateKey, $publicKey] = RsaEncryptionHelper::generateKeyPair();
-[$anotherPrivateKey, $anotherPublicKey] = RsaEncryptionHelper::generateKeyPair();
+$secretKey = uniqid();
 
-$dataEncrypted = RsaEncryptionHelper::encryptByPrivateKey($data, $privateKey);
-$dataDecrypted = RsaEncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
+$dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $secretKey);
+$dataDecrypted = SymmetricEncryptionHelper::decrypt($dataEncrypted, $secretKey);
 print_r($dataDecrypted);
 
-$dataEncrypted = RsaEncryptionHelper::encryptByPublicKey($data, $publicKey);
-$dataDecrypted = RsaEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
+$dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $secretKey, 'camellia-256-ofb');
+$dataDecrypted = SymmetricEncryptionHelper::decrypt($dataEncrypted, $secretKey, 'camellia-256-ofb');
+print_r($dataDecrypted);
+```
+
+#### Asymmetric encryption/decryption (RSA-based)
+```php
+use Smoren\EncryptionTools\Helpers\AsymmetricEncryptionHelper;
+
+$data = ["some", "data" => "to", "encrypt"];
+[$privateKey, $publicKey] = AsymmetricEncryptionHelper::generateKeyPair();
+[$anotherPrivateKey, $anotherPublicKey] = AsymmetricEncryptionHelper::generateKeyPair();
+
+$dataEncrypted = AsymmetricEncryptionHelper::encryptByPrivateKey($data, $privateKey);
+$dataDecrypted = AsymmetricEncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
+print_r($dataDecrypted);
+
+$dataEncrypted = AsymmetricEncryptionHelper::encryptByPublicKey($data, $publicKey);
+$dataDecrypted = AsymmetricEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
 print_r($dataDecrypted);
 ```

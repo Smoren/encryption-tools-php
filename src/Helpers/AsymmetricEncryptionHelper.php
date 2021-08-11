@@ -2,9 +2,9 @@
 
 namespace Smoren\EncryptionTools\Helpers;
 
-use Smoren\EncryptionTools\Exceptions\RsaEncryptionHelperException;
+use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
 
-class RsaEncryptionHelper
+class AsymmetricEncryptionHelper
 {
     /**
      * @return string[]
@@ -22,7 +22,7 @@ class RsaEncryptionHelper
      * @param mixed $data
      * @param string $publicKey
      * @return string
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     public static function encryptByPublicKey($data, string $publicKey): string
     {
@@ -35,7 +35,7 @@ class RsaEncryptionHelper
      * @param mixed $data
      * @param string $privateKey
      * @return string
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     public static function encryptByPrivateKey($data, string $privateKey): string
     {
@@ -48,7 +48,7 @@ class RsaEncryptionHelper
      * @param string $dataEncrypted
      * @param string $publicKey
      * @return mixed
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     public static function decryptByPublicKey(string $dataEncrypted, string $publicKey)
     {
@@ -56,7 +56,7 @@ class RsaEncryptionHelper
         openssl_public_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $publicKey);
 
         if($dataDecrypted === null) {
-            throw new RsaEncryptionHelperException('cannot decrypt by private key', RsaEncryptionHelperException::INCORRECT_KEY);
+            throw new AsymmetricEncryptionException('cannot decrypt by private key', AsymmetricEncryptionException::INCORRECT_KEY);
         }
 
         return json_decode($dataDecrypted, true);
@@ -66,7 +66,7 @@ class RsaEncryptionHelper
      * @param string $dataEncrypted
      * @param string $privateKey
      * @return mixed
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     public static function decryptByPrivateKey(string $dataEncrypted, string $privateKey)
     {
@@ -74,7 +74,7 @@ class RsaEncryptionHelper
         openssl_private_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $privateKey);
 
         if($dataDecrypted === null) {
-            throw new RsaEncryptionHelperException('cannot decrypt by private key', RsaEncryptionHelperException::INCORRECT_KEY);
+            throw new AsymmetricEncryptionException('cannot decrypt by private key', AsymmetricEncryptionException::INCORRECT_KEY);
         }
 
         return json_decode($dataDecrypted, true);
@@ -82,7 +82,7 @@ class RsaEncryptionHelper
 
     /**
      * @param string $key
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     public static function validatePublicKey(string $key)
     {
@@ -91,7 +91,7 @@ class RsaEncryptionHelper
 
     /**
      * @param string $key
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     public static function validatePrivateKey(string $key)
     {
@@ -101,7 +101,7 @@ class RsaEncryptionHelper
     /**
      * @param string $key
      * @param string $keyType
-     * @throws RsaEncryptionHelperException
+     * @throws AsymmetricEncryptionException
      */
     protected static function validateKey(string $key, string $keyType)
     {
@@ -130,7 +130,7 @@ class RsaEncryptionHelper
         }
 
         if(!$isCorrect) {
-            throw new RsaEncryptionHelperException('invalid key format', RsaEncryptionHelperException::INVALID_KEY_FORMAT);
+            throw new AsymmetricEncryptionException('invalid key format', AsymmetricEncryptionException::INVALID_KEY_FORMAT);
         }
     }
 }
