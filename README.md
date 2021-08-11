@@ -16,7 +16,7 @@ composer install
 ### Demo
 
 ```php
-use Smoren\EncryptionTools\RsaEncryptionHelper;
+use Smoren\EncryptionTools\Helpers\RsaEncryptionHelper;
 
 $data = ["some", "data" => "to", "encrypt"];
 [$privateKey, $publicKey] = RsaEncryptionHelper::generateKeyPair();

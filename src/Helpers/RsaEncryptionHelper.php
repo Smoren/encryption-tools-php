@@ -1,6 +1,6 @@
 <?php
 
-namespace Smoren\EncryptionTools;
+namespace Smoren\EncryptionTools\Helpers;
 
 use Smoren\EncryptionTools\Exceptions\RsaEncryptionHelperException;
 

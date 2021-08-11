@@ -3,7 +3,7 @@
 namespace app\tests\unit;
 
 use Codeception\Test\Unit;
-use Smoren\EncryptionTools\RsaEncryptionHelper;
+use Smoren\EncryptionTools\Helpers\RsaEncryptionHelper;
 use Smoren\EncryptionTools\Exceptions\RsaEncryptionHelperException;
 
 class CommonTest extends Unit
