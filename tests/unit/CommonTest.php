@@ -95,4 +95,23 @@ class CommonTest extends Unit
             $this->assertEquals(AsymmetricEncryptionException::INVALID_KEY_FORMAT, $e->getCode());
         }
     }
+
+    /**
+     * @throws AsymmetricEncryptionException
+     * @throws SymmetricEncryptionException
+     */
+    public function testTogether()
+    {
+        $data = "some secret string";
+        $passphrase = uniqid();
+
+        [$privateKey, $publicKey] = AsymmetricEncryptionHelper::generateKeyPair();
+        $privateKeyEncrypted = SymmetricEncryptionHelper::encrypt($privateKey, $passphrase);
+        $dataEncrypted = AsymmetricEncryptionHelper::encryptByPublicKey($data, $publicKey);
+
+        $privateKeyDecrypted = SymmetricEncryptionHelper::decrypt($privateKeyEncrypted, $passphrase);
+        $dataDecrypted = AsymmetricEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKeyDecrypted);
+
+        $this->assertEquals($data, $dataDecrypted);
+    }
 }
