@@ -2,7 +2,7 @@
 
 namespace Smoren\EncryptionTools;
 
-use Smoren\EncryptionTools\Exceptions\DecryptionError;
+use Smoren\EncryptionTools\Exceptions\EncryptionHelperException;
 
 class EncryptionHelper
 {
@@ -25,18 +25,20 @@ class EncryptionHelper
      */
     public static function encryptByPublicKey($data, string $publicKey): string
     {
+        static::validatePublicKey($publicKey);
         openssl_public_encrypt(json_encode($data), $dataEncrypted, $publicKey);
         return base64_encode($dataEncrypted);
     }
 
     /**
      * @param mixed $data
-     * @param string $publicKey
+     * @param string $privateKey
      * @return string
      */
-    public static function encryptByPrivateKey($data, string $publicKey): string
+    public static function encryptByPrivateKey($data, string $privateKey): string
     {
-        openssl_private_encrypt(json_encode($data), $dataEncrypted, $publicKey);
+        static::validatePrivateKey($privateKey);
+        openssl_private_encrypt(json_encode($data), $dataEncrypted, $privateKey);
         return base64_encode($dataEncrypted);
     }
 
@@ -44,14 +46,15 @@ class EncryptionHelper
      * @param string $dataEncrypted
      * @param string $publicKey
      * @return mixed
-     * @throws DecryptionError
+     * @throws EncryptionHelperException
      */
     public static function decryptByPublicKey(string $dataEncrypted, string $publicKey)
     {
+        static::validatePublicKey($publicKey);
         openssl_public_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $publicKey);
 
         if($dataDecrypted === null) {
-            throw new DecryptionError('cannot decrypt by private key', DecryptionError::INVALID_KEY);
+            throw new EncryptionHelperException('cannot decrypt by private key', EncryptionHelperException::INCORRECT_KEY);
         }
 
         return json_decode($dataDecrypted, true);
@@ -59,18 +62,60 @@ class EncryptionHelper
 
     /**
      * @param string $dataEncrypted
-     * @param string $publicKey
+     * @param string $privateKey
      * @return mixed
-     * @throws DecryptionError
+     * @throws EncryptionHelperException
      */
-    public static function decryptByPrivateKey(string $dataEncrypted, string $publicKey)
+    public static function decryptByPrivateKey(string $dataEncrypted, string $privateKey)
     {
-        openssl_private_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $publicKey);
+        static::validatePrivateKey($privateKey);
+        openssl_private_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $privateKey);
 
         if($dataDecrypted === null) {
-            throw new DecryptionError('cannot decrypt by private key', DecryptionError::INVALID_KEY);
+            throw new EncryptionHelperException('cannot decrypt by private key', EncryptionHelperException::INCORRECT_KEY);
         }
 
         return json_decode($dataDecrypted, true);
+    }
+
+    public static function validatePublicKey(string $key)
+    {
+        static::validateKey($key, 'PUBLIC');
+    }
+
+    public static function validatePrivateKey(string $key)
+    {
+        static::validateKey($key, 'PRIVATE');
+    }
+
+    protected static function validateKey(string $key, string $keyType)
+    {
+        $arPublicKey = explode("\n", $key);
+        $beginString = array_shift($arPublicKey);
+        $endLineBreak = array_pop($arPublicKey);
+        $endString = array_pop($arPublicKey);
+        $lastPart = array_pop($arPublicKey);
+
+        $isCorrect = true;
+
+        if(
+            $endLineBreak !== "" ||
+            $beginString !== "-----BEGIN {$keyType} KEY-----" ||
+            $endString !== "-----END {$keyType} KEY-----" ||
+            !preg_match('/^.{1,63}$/', $lastPart)
+        ) {
+            $isCorrect = false;
+        } else {
+            foreach($arPublicKey as $part) {
+                if(!preg_match('/^.{64}$/', $part)) {
+                    $isCorrect = false;
+                    break;
+                }
+            }
+        }
+
+        if(!$isCorrect) {
+            throw new EncryptionHelperException('invalid key format', EncryptionHelperException::INVALID_KEY_FORMAT);
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace app\tests\unit;
 
 use Codeception\Test\Unit;
 use Smoren\EncryptionTools\EncryptionHelper;
-use Smoren\EncryptionTools\Exceptions\DecryptionError;
+use Smoren\EncryptionTools\Exceptions\EncryptionHelperException;
 
 class CommonTest extends Unit
 {
@@ -22,8 +22,15 @@ class CommonTest extends Unit
         try {
             EncryptionHelper::decryptByPublicKey($dataEncrypted, $anotherPublicKey);
             $this->fail();
-        } catch(DecryptionError $e) {
-            $this->assertTrue(true);
+        } catch(EncryptionHelperException $e) {
+            $this->assertEquals(EncryptionHelperException::INCORRECT_KEY, $e->getCode());
+        }
+
+        try {
+            EncryptionHelper::decryptByPublicKey($dataEncrypted, 'invalid_key_format_value');
+            $this->fail();
+        } catch(EncryptionHelperException $e) {
+            $this->assertEquals(EncryptionHelperException::INVALID_KEY_FORMAT, $e->getCode());
         }
 
         $dataEncrypted = EncryptionHelper::encryptByPublicKey($data, $publicKey);
@@ -33,8 +40,15 @@ class CommonTest extends Unit
         try {
             EncryptionHelper::decryptByPrivateKey($dataEncrypted, $anotherPrivateKey);
             $this->fail();
-        } catch(DecryptionError $e) {
-            $this->assertTrue(true);
+        } catch(EncryptionHelperException $e) {
+            $this->assertEquals(EncryptionHelperException::INCORRECT_KEY, $e->getCode());
+        }
+
+        try {
+            EncryptionHelper::decryptByPrivateKey($dataEncrypted, 'invalid_key_format_value');
+            $this->fail();
+        } catch(EncryptionHelperException $e) {
+            $this->assertEquals(EncryptionHelperException::INVALID_KEY_FORMAT, $e->getCode());
         }
     }
 }
