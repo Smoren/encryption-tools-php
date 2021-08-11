@@ -22,6 +22,7 @@ class EncryptionHelper
      * @param mixed $data
      * @param string $publicKey
      * @return string
+     * @throws EncryptionHelperException
      */
     public static function encryptByPublicKey($data, string $publicKey): string
     {
@@ -34,6 +35,7 @@ class EncryptionHelper
      * @param mixed $data
      * @param string $privateKey
      * @return string
+     * @throws EncryptionHelperException
      */
     public static function encryptByPrivateKey($data, string $privateKey): string
     {
@@ -78,16 +80,29 @@ class EncryptionHelper
         return json_decode($dataDecrypted, true);
     }
 
+    /**
+     * @param string $key
+     * @throws EncryptionHelperException
+     */
     public static function validatePublicKey(string $key)
     {
         static::validateKey($key, 'PUBLIC');
     }
 
+    /**
+     * @param string $key
+     * @throws EncryptionHelperException
+     */
     public static function validatePrivateKey(string $key)
     {
         static::validateKey($key, 'PRIVATE');
     }
 
+    /**
+     * @param string $key
+     * @param string $keyType
+     * @throws EncryptionHelperException
+     */
     protected static function validateKey(string $key, string $keyType)
     {
         $arPublicKey = explode("\n", $key);

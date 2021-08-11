@@ -8,6 +8,9 @@ use Smoren\EncryptionTools\Exceptions\EncryptionHelperException;
 
 class CommonTest extends Unit
 {
+    /**
+     * @throws EncryptionHelperException
+     */
     public function testHelper()
     {
         $data = [1, 2, 3, "asd", "test" => "фыв"];
