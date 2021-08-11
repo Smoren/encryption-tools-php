@@ -96,6 +96,9 @@ class HelpersTest extends Unit
         }
     }
 
+    /**
+     * @throws AsymmetricEncryptionException
+     */
     public function testAsymmetricSinging()
     {
         $data = [1, 2, 3, "asd", "test" => "фыв"];
