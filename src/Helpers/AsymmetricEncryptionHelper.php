@@ -56,7 +56,10 @@ class AsymmetricEncryptionHelper
         openssl_public_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $publicKey);
 
         if($dataDecrypted === null) {
-            throw new AsymmetricEncryptionException('cannot decrypt by private key', AsymmetricEncryptionException::INCORRECT_KEY);
+            throw new AsymmetricEncryptionException(
+                'cannot decrypt by private key',
+                AsymmetricEncryptionException::CANNOT_DECRYPT
+            );
         }
 
         return json_decode($dataDecrypted, true);
@@ -74,10 +77,42 @@ class AsymmetricEncryptionHelper
         openssl_private_decrypt(base64_decode($dataEncrypted), $dataDecrypted, $privateKey);
 
         if($dataDecrypted === null) {
-            throw new AsymmetricEncryptionException('cannot decrypt by private key', AsymmetricEncryptionException::INCORRECT_KEY);
+            throw new AsymmetricEncryptionException(
+                'cannot decrypt by private key',
+                AsymmetricEncryptionException::CANNOT_DECRYPT
+            );
         }
 
         return json_decode($dataDecrypted, true);
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $privateKey
+     * @param string|int $algorithm
+     * @return mixed
+     * @throws AsymmetricEncryptionException
+     */
+    public static function sign($data, string $privateKey, int $algorithm = OPENSSL_ALGO_SHA256): string
+    {
+        static::validatePrivateKey($privateKey);
+        openssl_sign(json_encode($data), $signature, $privateKey, $algorithm);
+        return $signature;
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $signature
+     * @param string $publicKey
+     * @param string|int $algorithm
+     * @throws AsymmetricEncryptionException
+     */
+    public static function verify($data, string $signature, string $publicKey, int $algorithm = OPENSSL_ALGO_SHA256)
+    {
+        static::validatePublicKey($publicKey);
+        if(!openssl_verify(json_encode($data), $signature, $publicKey, $algorithm)) {
+            throw new AsymmetricEncryptionException('wrong signature', AsymmetricEncryptionException::CANNOT_VERIFY);
+        }
     }
 
     /**
@@ -130,7 +165,10 @@ class AsymmetricEncryptionHelper
         }
 
         if(!$isCorrect) {
-            throw new AsymmetricEncryptionException('invalid key format', AsymmetricEncryptionException::INVALID_KEY_FORMAT);
+            throw new AsymmetricEncryptionException(
+                'invalid key format',
+                AsymmetricEncryptionException::INVALID_KEY_FORMAT
+            );
         }
     }
 }

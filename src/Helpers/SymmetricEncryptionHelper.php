@@ -41,7 +41,7 @@ class SymmetricEncryptionHelper
         if($data === false) {
             throw new SymmetricEncryptionException(
                 'incorrect secret key',
-                SymmetricEncryptionException::INCORRECT_KEY
+                SymmetricEncryptionException::CANNOT_DECRYPT
             );
         }
         return json_decode($data, true);

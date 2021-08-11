@@ -33,7 +33,7 @@ class CommonTest extends Unit
         try {
             SymmetricEncryptionHelper::decrypt($dataEncrypted, uniqid());
         } catch(SymmetricEncryptionException $e) {
-            $this->assertEquals(SymmetricEncryptionException::INCORRECT_KEY, $e->getCode());
+            $this->assertEquals(SymmetricEncryptionException::CANNOT_DECRYPT, $e->getCode());
         }
 
         try {
@@ -67,7 +67,7 @@ class CommonTest extends Unit
             AsymmetricEncryptionHelper::decryptByPublicKey($dataEncrypted, $anotherPublicKey);
             $this->fail();
         } catch(AsymmetricEncryptionException $e) {
-            $this->assertEquals(AsymmetricEncryptionException::INCORRECT_KEY, $e->getCode());
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_DECRYPT, $e->getCode());
         }
 
         try {
@@ -85,11 +85,58 @@ class CommonTest extends Unit
             AsymmetricEncryptionHelper::decryptByPrivateKey($dataEncrypted, $anotherPrivateKey);
             $this->fail();
         } catch(AsymmetricEncryptionException $e) {
-            $this->assertEquals(AsymmetricEncryptionException::INCORRECT_KEY, $e->getCode());
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_DECRYPT, $e->getCode());
         }
 
         try {
             AsymmetricEncryptionHelper::decryptByPrivateKey($dataEncrypted, 'invalid_key_format_value');
+            $this->fail();
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::INVALID_KEY_FORMAT, $e->getCode());
+        }
+    }
+
+    public function testAsymmetricSinging()
+    {
+        $data = [1, 2, 3, "asd", "test" => "фыв"];
+        $anotherData = [1, 2, 3];
+
+        [$privateKey, $publicKey] = AsymmetricEncryptionHelper::generateKeyPair();
+        [$anotherPrivateKey, $anotherPublicKey] = AsymmetricEncryptionHelper::generateKeyPair();
+
+        $signature = AsymmetricEncryptionHelper::sign($data, $privateKey);
+        AsymmetricEncryptionHelper::verify($data, $signature, $publicKey);
+
+        try {
+            AsymmetricEncryptionHelper::verify($data, $signature, $anotherPublicKey);
+            $this->fail();
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_VERIFY, $e->getCode());
+        }
+
+        try {
+            AsymmetricEncryptionHelper::verify($data, $signature.'2', $publicKey);
+            $this->fail();
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_VERIFY, $e->getCode());
+        }
+
+        try {
+            AsymmetricEncryptionHelper::verify($anotherData, $signature, $publicKey);
+            $this->fail();
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_VERIFY, $e->getCode());
+        }
+
+        try {
+            AsymmetricEncryptionHelper::verify($data, $signature, 'invalid_public_key');
+            $this->fail();
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::INVALID_KEY_FORMAT, $e->getCode());
+        }
+
+        try {
+            AsymmetricEncryptionHelper::sign($data, 'invalid_public_key');
             $this->fail();
         } catch(AsymmetricEncryptionException $e) {
             $this->assertEquals(AsymmetricEncryptionException::INVALID_KEY_FORMAT, $e->getCode());
