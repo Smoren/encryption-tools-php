@@ -57,7 +57,7 @@ class AsymmetricEncryptionHelper
 
         if($dataDecrypted === null) {
             throw new AsymmetricEncryptionException(
-                'cannot decrypt by private key',
+                'cannot decrypt by public key',
                 AsymmetricEncryptionException::CANNOT_DECRYPT
             );
         }

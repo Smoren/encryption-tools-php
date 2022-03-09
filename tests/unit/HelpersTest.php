@@ -6,6 +6,7 @@ use Codeception\Test\Unit;
 use Smoren\EncryptionTools\Exceptions\SymmetricEncryptionException;
 use Smoren\EncryptionTools\Helpers\AsymmetricEncryptionHelper;
 use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
+use Smoren\EncryptionTools\Helpers\AsymmetricLargeDataEncryptionHelper;
 use Smoren\EncryptionTools\Helpers\SymmetricEncryptionHelper;
 
 class HelpersTest extends Unit
@@ -163,5 +164,33 @@ class HelpersTest extends Unit
         $dataDecrypted = AsymmetricEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKeyDecrypted);
 
         $this->assertEquals($data, $dataDecrypted);
+    }
+
+    public function testLargeData()
+    {
+        [$privateKey, $publicKey] = AsymmetricLargeDataEncryptionHelper::generateKeyPair();
+
+        $data = $this->generateRandomString(100000);
+        $dataEncrypted = AsymmetricLargeDataEncryptionHelper::encryptByPrivateKey($data, $privateKey);
+        $dataDecrypted = AsymmetricLargeDataEncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
+        $this->assertEquals($data, $dataDecrypted);
+
+        $data = $this->generateRandomString(100000);
+        $dataEncrypted = AsymmetricLargeDataEncryptionHelper::encryptByPublicKey($data, $publicKey);
+        $dataDecrypted = AsymmetricLargeDataEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
+        $this->assertEquals($data, $dataDecrypted);
+    }
+
+    protected function generateRandomString(int $length): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
     }
 }
