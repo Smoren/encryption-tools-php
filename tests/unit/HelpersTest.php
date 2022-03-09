@@ -181,6 +181,46 @@ class HelpersTest extends Unit
         $this->assertEquals($data, $dataDecrypted);
     }
 
+    public function testMultilevelSymmetric()
+    {
+        $data = ['1', '2', '3'];
+
+        $key1 = uniqid().'1';
+        $dataEncrypted1 = SymmetricEncryptionHelper::encrypt($data, $key1);
+
+        $key2 = uniqid().'2';
+        $dataEncrypted2 = SymmetricEncryptionHelper::encrypt($dataEncrypted1, $key2);
+
+        $key3 = uniqid().'3';
+        $dataEncrypted3 = SymmetricEncryptionHelper::encrypt($dataEncrypted2, $key3);
+
+        $dataDecrypted2 = SymmetricEncryptionHelper::decrypt($dataEncrypted3, $key3);
+        $dataDecrypted1 = SymmetricEncryptionHelper::decrypt($dataDecrypted2, $key2);
+        $dataDecrypted = SymmetricEncryptionHelper::decrypt($dataDecrypted1, $key1);
+
+        $this->assertEquals($data, $dataDecrypted);
+    }
+
+    public function testMultilevelAsymmetric()
+    {
+        $data = ['1', '2', '3'];
+
+        [$privateKey1, $publicKey1] = AsymmetricLargeDataEncryptionHelper::generateKeyPair();
+        $dataEncrypted1 = AsymmetricLargeDataEncryptionHelper::encryptByPublicKey($data, $publicKey1);
+
+        [$privateKey2, $publicKey2] = AsymmetricLargeDataEncryptionHelper::generateKeyPair();
+        $dataEncrypted2 = AsymmetricLargeDataEncryptionHelper::encryptByPublicKey($dataEncrypted1, $publicKey2);
+
+        [$privateKey3, $publicKey3] = AsymmetricLargeDataEncryptionHelper::generateKeyPair();
+        $dataEncrypted3 = AsymmetricLargeDataEncryptionHelper::encryptByPublicKey($dataEncrypted2, $publicKey3);
+
+        $dataDecrypted2 = AsymmetricLargeDataEncryptionHelper::decryptByPrivateKey($dataEncrypted3, $privateKey3);
+        $dataDecrypted1 = AsymmetricLargeDataEncryptionHelper::decryptByPrivateKey($dataDecrypted2, $privateKey2);
+        $dataDecrypted = AsymmetricLargeDataEncryptionHelper::decryptByPrivateKey($dataDecrypted1, $privateKey1);
+
+        $this->assertEquals($data, $dataDecrypted);
+    }
+
     protected function generateRandomString(int $length): string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
