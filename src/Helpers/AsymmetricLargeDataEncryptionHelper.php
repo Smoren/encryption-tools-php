@@ -23,13 +23,20 @@ class AsymmetricLargeDataEncryptionHelper
      * @param int $internalKeyLength
      * @return string
      * @throws AsymmetricEncryptionException
-     * @throws SymmetricEncryptionException
      */
     public static function encryptByPublicKey($data, string $publicKey, int $internalKeyLength = 128): string
     {
         $internalKey = static::generateRandomString($internalKeyLength);
         $internalKeyEncrypted = AsymmetricEncryptionHelper::encryptByPublicKey($internalKey, $publicKey);
-        $dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $internalKey);
+        try {
+            $dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $internalKey);
+        } catch(SymmetricEncryptionException $e) {
+            throw new AsymmetricEncryptionException(
+                'cannot decrypt',
+                AsymmetricEncryptionException::CANNOT_DECRYPT,
+                $e
+            );
+        }
 
         return strlen($internalKeyEncrypted).'_'.$internalKeyEncrypted.$dataEncrypted;
     }
@@ -46,7 +53,15 @@ class AsymmetricLargeDataEncryptionHelper
     {
         $internalKey = static::generateRandomString($internalKeyLength);
         $internalKeyEncrypted = AsymmetricEncryptionHelper::encryptByPrivateKey($internalKey, $privateKey);
-        $dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $internalKey);
+        try {
+            $dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $internalKey);
+        } catch(SymmetricEncryptionException $e) {
+            throw new AsymmetricEncryptionException(
+                'cannot decrypt',
+                AsymmetricEncryptionException::CANNOT_DECRYPT,
+                $e
+            );
+        }
 
         return strlen($internalKeyEncrypted).'_'.$internalKeyEncrypted.$dataEncrypted;
     }
@@ -56,7 +71,6 @@ class AsymmetricLargeDataEncryptionHelper
      * @param string $publicKey
      * @return mixed
      * @throws AsymmetricEncryptionException
-     * @throws SymmetricEncryptionException
      */
     public static function decryptByPublicKey(string $dataEncrypted, string $publicKey)
     {
@@ -66,7 +80,15 @@ class AsymmetricLargeDataEncryptionHelper
         $internalKeyDecrypted = AsymmetricEncryptionHelper::decryptByPublicKey($internalKeyEncrypted, $publicKey);
         $dataPartEncrypted = substr($dataEncrypted, strlen($matches[0])+$matches[1]);
 
-        return SymmetricEncryptionHelper::decrypt($dataPartEncrypted, $internalKeyDecrypted);
+        try {
+            return SymmetricEncryptionHelper::decrypt($dataPartEncrypted, $internalKeyDecrypted);
+        } catch(SymmetricEncryptionException $e) {
+            throw new AsymmetricEncryptionException(
+                'cannot decrypt',
+                AsymmetricEncryptionException::CANNOT_DECRYPT,
+                $e
+            );
+        }
     }
 
     /**
@@ -74,7 +96,6 @@ class AsymmetricLargeDataEncryptionHelper
      * @param string $privateKey
      * @return mixed
      * @throws AsymmetricEncryptionException
-     * @throws SymmetricEncryptionException
      */
     public static function decryptByPrivateKey(string $dataEncrypted, string $privateKey)
     {
@@ -84,7 +105,15 @@ class AsymmetricLargeDataEncryptionHelper
         $internalKeyDecrypted = AsymmetricEncryptionHelper::decryptByPrivateKey($internalKeyEncrypted, $privateKey);
         $dataPartEncrypted = substr($dataEncrypted, strlen($matches[0])+$matches[1]);
 
-        return SymmetricEncryptionHelper::decrypt($dataPartEncrypted, $internalKeyDecrypted);
+        try {
+            return SymmetricEncryptionHelper::decrypt($dataPartEncrypted, $internalKeyDecrypted);
+        } catch(SymmetricEncryptionException $e) {
+            throw new AsymmetricEncryptionException(
+                'cannot decrypt',
+                AsymmetricEncryptionException::CANNOT_DECRYPT,
+                $e
+            );
+        }
     }
 
     /**
