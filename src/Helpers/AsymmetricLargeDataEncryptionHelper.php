@@ -32,8 +32,8 @@ class AsymmetricLargeDataEncryptionHelper
             $dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $internalKey);
         } catch(SymmetricEncryptionException $e) {
             throw new AsymmetricEncryptionException(
-                'cannot decrypt',
-                AsymmetricEncryptionException::CANNOT_DECRYPT,
+                'cannot encrypt',
+                AsymmetricEncryptionException::CANNOT_ENCRYPT,
                 $e
             );
         }
@@ -57,8 +57,8 @@ class AsymmetricLargeDataEncryptionHelper
             $dataEncrypted = SymmetricEncryptionHelper::encrypt($data, $internalKey);
         } catch(SymmetricEncryptionException $e) {
             throw new AsymmetricEncryptionException(
-                'cannot decrypt',
-                AsymmetricEncryptionException::CANNOT_DECRYPT,
+                'cannot encrypt',
+                AsymmetricEncryptionException::CANNOT_ENCRYPT,
                 $e
             );
         }
