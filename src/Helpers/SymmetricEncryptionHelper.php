@@ -16,11 +16,30 @@ class SymmetricEncryptionHelper
     public static function encrypt($data, string $secretKey, string $cipherMethod = 'aes-256-cbc'): string
     {
         static::checkCipherMethodAvailable($cipherMethod);
-        $data = json_encode($data);
+        /** @var string $data */
+        $data = json_encode($data); // TODO throw exception if false
 
         $ivLen = openssl_cipher_iv_length($cipherMethod);
+        if($ivLen === false) {
+            throw new SymmetricEncryptionException(
+                'openssl_cipher_iv_length() returned false',
+                SymmetricEncryptionException::OPENSSL_ERROR
+            );
+        }
         $iv = openssl_random_pseudo_bytes($ivLen);
+        if($iv === false) {
+            throw new SymmetricEncryptionException(
+                'openssl_random_pseudo_bytes() returned false',
+                SymmetricEncryptionException::OPENSSL_ERROR
+            );
+        }
         $cipherText = openssl_encrypt($data, $cipherMethod, $secretKey, OPENSSL_RAW_DATA, $iv);
+        if($cipherText === false) {
+            throw new SymmetricEncryptionException(
+                'openssl_encrypt() returned false',
+                SymmetricEncryptionException::OPENSSL_ERROR
+            );
+        }
         $hmac = hash_hmac('sha256', $cipherText, $secretKey, true);
 
         return base64_encode($iv.$hmac.$cipherText);
@@ -39,6 +58,12 @@ class SymmetricEncryptionHelper
 
         $c = base64_decode($encryptedData);
         $ivLen = openssl_cipher_iv_length($cipherMethod);
+        if($ivLen === false) {
+            throw new SymmetricEncryptionException(
+                'openssl_cipher_iv_length() returned false',
+                SymmetricEncryptionException::OPENSSL_ERROR
+            );
+        }
         $iv = substr($c, 0, $ivLen);
         $hmac = substr($c, $ivLen, $sha2len=32);
         $cipherText = substr($c, $ivLen+$sha2len);
