@@ -80,7 +80,7 @@ class SymmetricEncryptionHelper
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public static function getCipherMethodList(): array
     {
@@ -91,7 +91,7 @@ class SymmetricEncryptionHelper
      * @param string $cipherMethod
      * @throws SymmetricEncryptionException
      */
-    public static function checkCipherMethodAvailable(string $cipherMethod)
+    public static function checkCipherMethodAvailable(string $cipherMethod): void
     {
         if(!in_array($cipherMethod, static::getCipherMethodList(), true)) {
             throw new SymmetricEncryptionException(
