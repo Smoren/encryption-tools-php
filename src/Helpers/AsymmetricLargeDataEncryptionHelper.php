@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Smoren\EncryptionTools\Helpers;
-
 
 use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
 use Smoren\EncryptionTools\Exceptions\SymmetricEncryptionException;
@@ -11,6 +9,7 @@ class AsymmetricLargeDataEncryptionHelper
 {
     /**
      * @return string[]
+     * @throws AsymmetricEncryptionException
      */
     public static function generateKeyPair(): array
     {
@@ -18,7 +17,7 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param string $publicKey
      * @param int $internalKeyLength
      * @return string
@@ -42,12 +41,11 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param string $privateKey
      * @param int $internalKeyLength
      * @return string
      * @throws AsymmetricEncryptionException
-     * @throws SymmetricEncryptionException
      */
     public static function encryptByPrivateKey($data, string $privateKey, int $internalKeyLength = 128): string
     {
@@ -76,9 +74,10 @@ class AsymmetricLargeDataEncryptionHelper
     {
         $matches = static::getPrefixMatches($dataEncrypted);
 
-        $internalKeyEncrypted = substr($dataEncrypted, strlen($matches[0]), $matches[1]);
+        $internalKeyEncrypted = substr($dataEncrypted, $matches[0], $matches[1]);
+        /** @var string $internalKeyDecrypted */
         $internalKeyDecrypted = AsymmetricEncryptionHelper::decryptByPublicKey($internalKeyEncrypted, $publicKey);
-        $dataPartEncrypted = substr($dataEncrypted, strlen($matches[0])+$matches[1]);
+        $dataPartEncrypted = substr($dataEncrypted, $matches[0]+$matches[1]);
 
         try {
             return SymmetricEncryptionHelper::decrypt($dataPartEncrypted, $internalKeyDecrypted);
@@ -101,9 +100,10 @@ class AsymmetricLargeDataEncryptionHelper
     {
         $matches = static::getPrefixMatches($dataEncrypted);
 
-        $internalKeyEncrypted = substr($dataEncrypted, strlen($matches[0]), $matches[1]);
+        $internalKeyEncrypted = substr($dataEncrypted, $matches[0], $matches[1]);
+        /** @var string $internalKeyDecrypted */
         $internalKeyDecrypted = AsymmetricEncryptionHelper::decryptByPrivateKey($internalKeyEncrypted, $privateKey);
-        $dataPartEncrypted = substr($dataEncrypted, strlen($matches[0])+$matches[1]);
+        $dataPartEncrypted = substr($dataEncrypted, $matches[0]+$matches[1]);
 
         try {
             return SymmetricEncryptionHelper::decrypt($dataPartEncrypted, $internalKeyDecrypted);
@@ -118,7 +118,7 @@ class AsymmetricLargeDataEncryptionHelper
 
     /**
      * @param string $dataEncrypted
-     * @return array
+     * @return array<int>
      * @throws AsymmetricEncryptionException
      */
     protected static function getPrefixMatches(string $dataEncrypted): array
@@ -127,6 +127,7 @@ class AsymmetricLargeDataEncryptionHelper
         if(!isset($matches[1])) {
             throw new AsymmetricEncryptionException('cannot decrypt', AsymmetricEncryptionException::CANNOT_DECRYPT);
         }
+        $matches[0] = strlen($matches[0]);
 
         return $matches;
     }

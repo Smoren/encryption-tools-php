@@ -6,5 +6,4 @@ use Smoren\ExtendedExceptions\BadDataException;
 
 abstract class EncryptionException extends BadDataException
 {
-
 }

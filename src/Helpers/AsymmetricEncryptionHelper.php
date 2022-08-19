@@ -8,12 +8,28 @@ class AsymmetricEncryptionHelper
 {
     /**
      * @return string[]
+     * @throws AsymmetricEncryptionException
      */
     public static function generateKeyPair(): array
     {
         $keyPair = openssl_pkey_new();
+        if(!$keyPair) {
+            throw new AsymmetricEncryptionException(
+                'openssl_pkey_new() returned false',
+                AsymmetricEncryptionException::OPENSSL_ERROR
+            );
+        }
+
         openssl_pkey_export($keyPair, $privateKey);
-        $publicKey = openssl_pkey_get_details($keyPair)["key"];
+        $details = openssl_pkey_get_details($keyPair);
+        if(!$details) {
+            throw new AsymmetricEncryptionException(
+                'openssl_pkey_get_details() returned false',
+                AsymmetricEncryptionException::OPENSSL_ERROR
+            );
+        }
+
+        $publicKey = $details["key"];
 
         return [$privateKey, $publicKey];
     }
@@ -27,7 +43,9 @@ class AsymmetricEncryptionHelper
     public static function encryptByPublicKey($data, string $publicKey): string
     {
         static::validatePublicKey($publicKey);
-        openssl_public_encrypt(json_encode($data), $dataEncrypted, $publicKey);
+        /** @var string $jsonData */
+        $jsonData = json_encode($data); // TODO throw exception if false
+        openssl_public_encrypt($jsonData, $dataEncrypted, $publicKey);
         return base64_encode($dataEncrypted);
     }
 
@@ -40,7 +58,9 @@ class AsymmetricEncryptionHelper
     public static function encryptByPrivateKey($data, string $privateKey): string
     {
         static::validatePrivateKey($privateKey);
-        openssl_private_encrypt(json_encode($data), $dataEncrypted, $privateKey);
+        /** @var string $jsonData */
+        $jsonData = json_encode($data); // TODO throw exception if false
+        openssl_private_encrypt($jsonData, $dataEncrypted, $privateKey);
         return base64_encode($dataEncrypted);
     }
 
@@ -89,14 +109,16 @@ class AsymmetricEncryptionHelper
     /**
      * @param mixed $data
      * @param string $privateKey
-     * @param string|int $algorithm
-     * @return mixed
+     * @param int $algorithm
+     * @return string
      * @throws AsymmetricEncryptionException
      */
     public static function sign($data, string $privateKey, int $algorithm = OPENSSL_ALGO_SHA256): string
     {
         static::validatePrivateKey($privateKey);
-        openssl_sign(json_encode($data), $signature, $privateKey, $algorithm);
+        /** @var string $jsonData */
+        $jsonData = json_encode($data); // TODO throw exception if false
+        openssl_sign($jsonData, $signature, $privateKey, $algorithm);
         return $signature;
     }
 
@@ -104,13 +126,19 @@ class AsymmetricEncryptionHelper
      * @param mixed $data
      * @param string $signature
      * @param string $publicKey
-     * @param string|int $algorithm
+     * @param int $algorithm
      * @throws AsymmetricEncryptionException
      */
-    public static function verify($data, string $signature, string $publicKey, int $algorithm = OPENSSL_ALGO_SHA256)
-    {
+    public static function verify(
+        $data,
+        string $signature,
+        string $publicKey,
+        int $algorithm = OPENSSL_ALGO_SHA256
+    ): void {
         static::validatePublicKey($publicKey);
-        if(!openssl_verify(json_encode($data), $signature, $publicKey, $algorithm)) {
+        /** @var string $jsonData */
+        $jsonData = json_encode($data); // TODO throw exception if false
+        if(!openssl_verify($jsonData, $signature, $publicKey, $algorithm)) {
             throw new AsymmetricEncryptionException('wrong signature', AsymmetricEncryptionException::CANNOT_VERIFY);
         }
     }
@@ -119,7 +147,7 @@ class AsymmetricEncryptionHelper
      * @param string $key
      * @throws AsymmetricEncryptionException
      */
-    public static function validatePublicKey(string $key)
+    public static function validatePublicKey(string $key): void
     {
         static::validateKey($key, 'PUBLIC');
     }
@@ -128,7 +156,7 @@ class AsymmetricEncryptionHelper
      * @param string $key
      * @throws AsymmetricEncryptionException
      */
-    public static function validatePrivateKey(string $key)
+    public static function validatePrivateKey(string $key): void
     {
         static::validateKey($key, 'PRIVATE');
     }
@@ -138,7 +166,7 @@ class AsymmetricEncryptionHelper
      * @param string $keyType
      * @throws AsymmetricEncryptionException
      */
-    protected static function validateKey(string $key, string $keyType)
+    protected static function validateKey(string $key, string $keyType): void
     {
         $arPublicKey = explode("\n", $key);
         $beginString = array_shift($arPublicKey);
@@ -152,7 +180,7 @@ class AsymmetricEncryptionHelper
             $endLineBreak !== "" ||
             $beginString !== "-----BEGIN {$keyType} KEY-----" ||
             $endString !== "-----END {$keyType} KEY-----" ||
-            !preg_match('/^.{1,63}$/', $lastPart)
+            !preg_match('/^.{1,63}$/', $lastPart ?? '')
         ) {
             $isCorrect = false;
         } else {

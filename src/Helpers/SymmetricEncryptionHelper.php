@@ -7,7 +7,7 @@ use Smoren\EncryptionTools\Exceptions\SymmetricEncryptionException;
 class SymmetricEncryptionHelper
 {
     /**
-     * @param $data
+     * @param mixed $data
      * @param string $secretKey
      * @param string $cipherMethod
      * @return string
@@ -26,6 +26,13 @@ class SymmetricEncryptionHelper
         return base64_encode($iv.$hmac.$cipherText);
     }
 
+    /**
+     * @param string $encryptedData
+     * @param string $secretKey
+     * @param string $cipherMethod
+     * @return mixed
+     * @throws SymmetricEncryptionException
+     */
     public static function decrypt(string $encryptedData, string $secretKey, string $cipherMethod = 'aes-256-cbc')
     {
         static::checkCipherMethodAvailable($cipherMethod);
@@ -47,11 +54,18 @@ class SymmetricEncryptionHelper
         return json_decode($data, true);
     }
 
+    /**
+     * @return array
+     */
     public static function getCipherMethodList(): array
     {
         return openssl_get_cipher_methods();
     }
 
+    /**
+     * @param string $cipherMethod
+     * @throws SymmetricEncryptionException
+     */
     public static function checkCipherMethodAvailable(string $cipherMethod)
     {
         if(!in_array($cipherMethod, static::getCipherMethodList(), true)) {

@@ -1,4 +1,11 @@
 # encryption-tools
+
+![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/smoren/encryption-tools)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Smoren/encryption-tools-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Smoren/encryption-tools-php/?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Smoren/encryption-tools-php/badge.svg?branch=master)](https://coveralls.io/github/Smoren/encryption-tools-php?branch=master)
+![Build and test](https://github.com/Smoren/encryption-tools-php/actions/workflows/test_master.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Tools for encryption/decryption and signing/verifying (wraps openssl lib).
 
 * Symmetric
