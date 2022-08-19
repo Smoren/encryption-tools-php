@@ -5,13 +5,18 @@ namespace Smoren\EncryptionTools\Helpers;
 use Smoren\EncryptionTools\Exceptions\JsonException;
 use Smoren\EncryptionTools\Exceptions\SymmetricEncryptionException;
 
+/**
+ * Class SymmetricEncryptionHelper
+ * @author Smoren <ofigate@gmail.com>
+ */
 class SymmetricEncryptionHelper
 {
     /**
-     * @param mixed $data
-     * @param string $secretKey
-     * @param string $cipherMethod
-     * @return string
+     * Returns data encrypted by secret key
+     * @param mixed $data data to encrypt
+     * @param string $secretKey secret key
+     * @param string $cipherMethod encryption method
+     * @return string encrypted data
      * @throws SymmetricEncryptionException
      * @throws JsonException
      */
@@ -47,10 +52,11 @@ class SymmetricEncryptionHelper
     }
 
     /**
-     * @param string $encryptedData
-     * @param string $secretKey
-     * @param string $cipherMethod
-     * @return mixed
+     * Returns data decrypted by secret key
+     * @param string $encryptedData data to decrypt
+     * @param string $secretKey secret key
+     * @param string $cipherMethod encryption method
+     * @return mixed decrypted data
      * @throws SymmetricEncryptionException
      */
     public static function decrypt(string $encryptedData, string $secretKey, string $cipherMethod = 'aes-256-cbc')
@@ -81,6 +87,7 @@ class SymmetricEncryptionHelper
     }
 
     /**
+     * Returns list of available encryption methods
      * @return array<string>
      */
     public static function getCipherMethodList(): array
@@ -89,8 +96,9 @@ class SymmetricEncryptionHelper
     }
 
     /**
-     * @param string $cipherMethod
-     * @throws SymmetricEncryptionException
+     * Checks if encryption method available
+     * @param string $cipherMethod encryption method
+     * @throws SymmetricEncryptionException if method is unavailable
      */
     public static function checkCipherMethodAvailable(string $cipherMethod): void
     {

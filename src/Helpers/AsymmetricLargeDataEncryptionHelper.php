@@ -3,12 +3,18 @@
 namespace Smoren\EncryptionTools\Helpers;
 
 use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
+use Smoren\EncryptionTools\Exceptions\JsonException;
 use Smoren\EncryptionTools\Exceptions\SymmetricEncryptionException;
 
+/**
+ * Class AsymmetricLargeDataEncryptionHelper
+ * @author Smoren <ofigate@gmail.com>
+ */
 class AsymmetricLargeDataEncryptionHelper
 {
     /**
-     * @return string[]
+     * Generates RSA key pair
+     * @return string[] [$privateKey, $publicKey]
      * @throws AsymmetricEncryptionException
      */
     public static function generateKeyPair(): array
@@ -17,11 +23,12 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param mixed $data
-     * @param string $publicKey
-     * @param int $internalKeyLength
-     * @return string
+     * Returns data encrypted by public key
+     * @param mixed $data data to encrypt
+     * @param string $publicKey public key
+     * @return string encrypted data
      * @throws AsymmetricEncryptionException
+     * @throws JsonException
      */
     public static function encryptByPublicKey($data, string $publicKey, int $internalKeyLength = 128): string
     {
@@ -41,11 +48,12 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param mixed $data
-     * @param string $privateKey
-     * @param int $internalKeyLength
-     * @return string
+     * Returns data encrypted by private key
+     * @param mixed $data data to encrypt
+     * @param string $privateKey public key
+     * @return string encrypted data
      * @throws AsymmetricEncryptionException
+     * @throws JsonException
      */
     public static function encryptByPrivateKey($data, string $privateKey, int $internalKeyLength = 128): string
     {
@@ -65,9 +73,10 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param string $dataEncrypted
-     * @param string $publicKey
-     * @return mixed
+     * Returns data decrypted by public key
+     * @param string $dataEncrypted data to decrypt
+     * @param string $publicKey public key
+     * @return mixed decrypted data
      * @throws AsymmetricEncryptionException
      */
     public static function decryptByPublicKey(string $dataEncrypted, string $publicKey)
@@ -91,9 +100,10 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param string $dataEncrypted
-     * @param string $privateKey
-     * @return mixed
+     * Returns data decrypted by private key
+     * @param string $dataEncrypted data to decrypt
+     * @param string $privateKey private key
+     * @return mixed decrypted data
      * @throws AsymmetricEncryptionException
      */
     public static function decryptByPrivateKey(string $dataEncrypted, string $privateKey)
@@ -117,8 +127,9 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param string $dataEncrypted
-     * @return array<int>
+     * Internal function-helper for decrypting
+     * @param string $dataEncrypted encrypted data
+     * @return array<int> [int, int]
      * @throws AsymmetricEncryptionException
      */
     protected static function getPrefixMatches(string $dataEncrypted): array
@@ -133,8 +144,9 @@ class AsymmetricLargeDataEncryptionHelper
     }
 
     /**
-     * @param int $length
-     * @return string
+     * Generates random string
+     * @param int $length string length
+     * @return string random string
      */
     protected static function generateRandomString(int $length): string
     {

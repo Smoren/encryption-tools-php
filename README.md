@@ -19,8 +19,8 @@ composer require smoren/encryption-tools
 ### Unit testing
 ```shell script
 composer install
-./vendor/bin/codecept build
-./vendor/bin/codecept run unit tests/unit
+composer test-init
+composer test
 ```
 
 ### Usage
@@ -72,4 +72,20 @@ try {
 } catch(AsymmetricEncryptionException $e) {
     // ... handling exception if cannot verify signature
 }
+```
+
+#### Asymmetric encryption/decryption (RSA-based) for lage data
+```php
+use Smoren\EncryptionTools\Helpers\AsymmetricLargeDataEncryptionHelper;
+
+$data = file_get_contents('file_with_large_data.txt');
+[$privateKey, $publicKey] = AsymmetricLargeDataEncryptionHelper::generateKeyPair();
+
+$dataEncrypted = AsymmetricLargeDataEncryptionHelper::encryptByPrivateKey($data, $privateKey);
+$dataDecrypted = AsymmetricLargeDataEncryptionHelper::decryptByPublicKey($dataEncrypted, $publicKey);
+print_r($dataDecrypted);
+
+$dataEncrypted = AsymmetricLargeDataEncryptionHelper::encryptByPublicKey($data, $publicKey);
+$dataDecrypted = AsymmetricLargeDataEncryptionHelper::decryptByPrivateKey($dataEncrypted, $privateKey);
+print_r($dataDecrypted);
 ```

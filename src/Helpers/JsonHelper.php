@@ -4,6 +4,10 @@ namespace Smoren\EncryptionTools\Helpers;
 
 use Smoren\EncryptionTools\Exceptions\JsonException;
 
+/**
+ * Class JsonHelper
+ * @author Smoren <ofigate@gmail.com>
+ */
 class JsonHelper
 {
     /**

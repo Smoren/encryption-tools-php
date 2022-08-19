@@ -5,10 +5,15 @@ namespace Smoren\EncryptionTools\Helpers;
 use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
 use Smoren\EncryptionTools\Exceptions\JsonException;
 
+/**
+ * Class AsymmetricEncryptionHelper
+ * @author Smoren <ofigate@gmail.com>
+ */
 class AsymmetricEncryptionHelper
 {
     /**
-     * @return string[]
+     * Generates RSA key pair
+     * @return string[] [$privateKey, $publicKey]
      * @throws AsymmetricEncryptionException
      */
     public static function generateKeyPair(): array
@@ -36,9 +41,10 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param mixed $data
-     * @param string $publicKey
-     * @return string
+     * Returns data encrypted by public key
+     * @param mixed $data data to encrypt
+     * @param string $publicKey public key
+     * @return string encrypted data
      * @throws AsymmetricEncryptionException
      * @throws JsonException
      */
@@ -50,9 +56,10 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param mixed $data
-     * @param string $privateKey
-     * @return string
+     * Returns data encrypted by private key
+     * @param mixed $data data to encrypt
+     * @param string $privateKey public key
+     * @return string encrypted data
      * @throws AsymmetricEncryptionException
      * @throws JsonException
      */
@@ -64,9 +71,10 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param string $dataEncrypted
-     * @param string $publicKey
-     * @return mixed
+     * Returns data decrypted by public key
+     * @param string $dataEncrypted data to decrypt
+     * @param string $publicKey public key
+     * @return mixed decrypted data
      * @throws AsymmetricEncryptionException
      */
     public static function decryptByPublicKey(string $dataEncrypted, string $publicKey)
@@ -85,9 +93,10 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param string $dataEncrypted
-     * @param string $privateKey
-     * @return mixed
+     * Returns data decrypted by private key
+     * @param string $dataEncrypted data to decrypt
+     * @param string $privateKey private key
+     * @return mixed decrypted data
      * @throws AsymmetricEncryptionException
      */
     public static function decryptByPrivateKey(string $dataEncrypted, string $privateKey)
@@ -106,10 +115,11 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param mixed $data
-     * @param string $privateKey
-     * @param int $algorithm
-     * @return string
+     * Returns signature created for data with private key
+     * @param mixed $data data to sign
+     * @param string $privateKey private key
+     * @param int $algorithm openssl algorithm
+     * @return string signature
      * @throws AsymmetricEncryptionException
      * @throws JsonException
      */
@@ -121,11 +131,12 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param mixed $data
-     * @param string $signature
-     * @param string $publicKey
-     * @param int $algorithm
-     * @throws AsymmetricEncryptionException
+     * Verifies the signature
+     * @param mixed $data data to verify signature for
+     * @param string $signature signature to verify
+     * @param string $publicKey public key to verfy signature with
+     * @param int $algorithm openssl algorithm
+     * @throws AsymmetricEncryptionException if verification failure
      * @throws JsonException
      */
     public static function verify(
@@ -141,27 +152,30 @@ class AsymmetricEncryptionHelper
     }
 
     /**
-     * @param string $key
-     * @throws AsymmetricEncryptionException
+     * Validates public key
+     * @param string $publicKey public key to validate
+     * @throws AsymmetricEncryptionException if key is invalid
      */
-    public static function validatePublicKey(string $key): void
+    public static function validatePublicKey(string $publicKey): void
     {
-        static::validateKey($key, 'PUBLIC');
+        static::validateKey($publicKey, 'PUBLIC');
     }
 
     /**
-     * @param string $key
-     * @throws AsymmetricEncryptionException
+     * Validates private key
+     * @param string $privateKey private key to validate
+     * @throws AsymmetricEncryptionException if key is invalid
      */
-    public static function validatePrivateKey(string $key): void
+    public static function validatePrivateKey(string $privateKey): void
     {
-        static::validateKey($key, 'PRIVATE');
+        static::validateKey($privateKey, 'PRIVATE');
     }
 
     /**
-     * @param string $key
-     * @param string $keyType
-     * @throws AsymmetricEncryptionException
+     * Validates key
+     * @param string $key key to validate
+     * @param string $keyType key type (PUBLIC or PRIVATE)
+     * @throws AsymmetricEncryptionException if key is invalid
      */
     protected static function validateKey(string $key, string $keyType): void
     {
