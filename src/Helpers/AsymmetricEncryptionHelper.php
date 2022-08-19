@@ -3,6 +3,7 @@
 namespace Smoren\EncryptionTools\Helpers;
 
 use Smoren\EncryptionTools\Exceptions\AsymmetricEncryptionException;
+use Smoren\EncryptionTools\Exceptions\JsonException;
 
 class AsymmetricEncryptionHelper
 {
@@ -39,13 +40,12 @@ class AsymmetricEncryptionHelper
      * @param string $publicKey
      * @return string
      * @throws AsymmetricEncryptionException
+     * @throws JsonException
      */
     public static function encryptByPublicKey($data, string $publicKey): string
     {
         static::validatePublicKey($publicKey);
-        /** @var string $jsonData */
-        $jsonData = json_encode($data); // TODO throw exception if false
-        openssl_public_encrypt($jsonData, $dataEncrypted, $publicKey);
+        openssl_public_encrypt(JsonHelper::encode($data), $dataEncrypted, $publicKey);
         return base64_encode($dataEncrypted);
     }
 
@@ -54,13 +54,12 @@ class AsymmetricEncryptionHelper
      * @param string $privateKey
      * @return string
      * @throws AsymmetricEncryptionException
+     * @throws JsonException
      */
     public static function encryptByPrivateKey($data, string $privateKey): string
     {
         static::validatePrivateKey($privateKey);
-        /** @var string $jsonData */
-        $jsonData = json_encode($data); // TODO throw exception if false
-        openssl_private_encrypt($jsonData, $dataEncrypted, $privateKey);
+        openssl_private_encrypt(JsonHelper::encode($data), $dataEncrypted, $privateKey);
         return base64_encode($dataEncrypted);
     }
 
@@ -112,13 +111,12 @@ class AsymmetricEncryptionHelper
      * @param int $algorithm
      * @return string
      * @throws AsymmetricEncryptionException
+     * @throws JsonException
      */
     public static function sign($data, string $privateKey, int $algorithm = OPENSSL_ALGO_SHA256): string
     {
         static::validatePrivateKey($privateKey);
-        /** @var string $jsonData */
-        $jsonData = json_encode($data); // TODO throw exception if false
-        openssl_sign($jsonData, $signature, $privateKey, $algorithm);
+        openssl_sign(JsonHelper::encode($data), $signature, $privateKey, $algorithm);
         return $signature;
     }
 
@@ -128,6 +126,7 @@ class AsymmetricEncryptionHelper
      * @param string $publicKey
      * @param int $algorithm
      * @throws AsymmetricEncryptionException
+     * @throws JsonException
      */
     public static function verify(
         $data,
@@ -136,9 +135,7 @@ class AsymmetricEncryptionHelper
         int $algorithm = OPENSSL_ALGO_SHA256
     ): void {
         static::validatePublicKey($publicKey);
-        /** @var string $jsonData */
-        $jsonData = json_encode($data); // TODO throw exception if false
-        if(!openssl_verify($jsonData, $signature, $publicKey, $algorithm)) {
+        if(!openssl_verify(JsonHelper::encode($data), $signature, $publicKey, $algorithm)) {
             throw new AsymmetricEncryptionException('wrong signature', AsymmetricEncryptionException::CANNOT_VERIFY);
         }
     }

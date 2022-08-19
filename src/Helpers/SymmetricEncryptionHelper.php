@@ -2,6 +2,7 @@
 
 namespace Smoren\EncryptionTools\Helpers;
 
+use Smoren\EncryptionTools\Exceptions\JsonException;
 use Smoren\EncryptionTools\Exceptions\SymmetricEncryptionException;
 
 class SymmetricEncryptionHelper
@@ -12,12 +13,12 @@ class SymmetricEncryptionHelper
      * @param string $cipherMethod
      * @return string
      * @throws SymmetricEncryptionException
+     * @throws JsonException
      */
     public static function encrypt($data, string $secretKey, string $cipherMethod = 'aes-256-cbc'): string
     {
         static::checkCipherMethodAvailable($cipherMethod);
-        /** @var string $data */
-        $data = json_encode($data); // TODO throw exception if false
+        $data = JsonHelper::encode($data);
 
         $ivLen = openssl_cipher_iv_length($cipherMethod);
         if($ivLen === false) {
