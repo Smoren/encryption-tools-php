@@ -27,7 +27,7 @@ class SymmetricEncryptionHelper
             );
         }
         $iv = openssl_random_pseudo_bytes($ivLen);
-        if($iv === false) {
+        if(!$iv) {
             throw new SymmetricEncryptionException(
                 'openssl_random_pseudo_bytes() returned false',
                 SymmetricEncryptionException::OPENSSL_ERROR
