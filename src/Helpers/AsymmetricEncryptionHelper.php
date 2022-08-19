@@ -51,7 +51,12 @@ class AsymmetricEncryptionHelper
     public static function encryptByPublicKey($data, string $publicKey): string
     {
         static::validatePublicKey($publicKey);
-        openssl_public_encrypt(JsonHelper::encode($data), $dataEncrypted, $publicKey);
+        if(!openssl_public_encrypt(JsonHelper::encode($data), $dataEncrypted, $publicKey)) {
+            throw new AsymmetricEncryptionException(
+                'openssl_public_encrypt() returned false',
+                AsymmetricEncryptionException::CANNOT_ENCRYPT
+            );
+        }
         return base64_encode($dataEncrypted);
     }
 
@@ -66,7 +71,12 @@ class AsymmetricEncryptionHelper
     public static function encryptByPrivateKey($data, string $privateKey): string
     {
         static::validatePrivateKey($privateKey);
-        openssl_private_encrypt(JsonHelper::encode($data), $dataEncrypted, $privateKey);
+        if(!openssl_private_encrypt(JsonHelper::encode($data), $dataEncrypted, $privateKey)) {
+            throw new AsymmetricEncryptionException(
+                'openssl_private_encrypt() returned false',
+                AsymmetricEncryptionException::CANNOT_ENCRYPT
+            );
+        }
         return base64_encode($dataEncrypted);
     }
 

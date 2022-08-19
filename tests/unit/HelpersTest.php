@@ -221,6 +221,29 @@ class HelpersTest extends Unit
         $this->assertEquals($data, $dataDecrypted);
     }
 
+    public function testTooLargeData()
+    {
+        [$privateKey, $publicKey] = AsymmetricEncryptionHelper::generateKeyPair();
+
+        $input = $this->generateRandomString(243);
+        AsymmetricEncryptionHelper::encryptByPrivateKey($input, $privateKey);
+        AsymmetricEncryptionHelper::encryptByPublicKey($input, $publicKey);
+
+        $input = $this->generateRandomString(250);
+        try {
+            AsymmetricEncryptionHelper::encryptByPrivateKey($input, $privateKey);
+            $this->assertTrue(false);
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_ENCRYPT, $e->getCode());
+        }
+        try {
+            AsymmetricEncryptionHelper::encryptByPublicKey($input, $publicKey);
+            $this->assertTrue(false);
+        } catch(AsymmetricEncryptionException $e) {
+            $this->assertEquals(AsymmetricEncryptionException::CANNOT_ENCRYPT, $e->getCode());
+        }
+    }
+
     protected function generateRandomString(int $length): string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
