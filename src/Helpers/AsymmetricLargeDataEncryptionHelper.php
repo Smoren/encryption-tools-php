@@ -140,7 +140,7 @@ class AsymmetricLargeDataEncryptionHelper
         }
         $matches[0] = strlen($matches[0]);
 
-        return $matches;
+        return [$matches[0], (int)$matches[1]];
     }
 
     /**
