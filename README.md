@@ -74,7 +74,7 @@ try {
 }
 ```
 
-#### Asymmetric encryption/decryption (RSA-based) for lage data
+#### Asymmetric encryption/decryption (RSA-based) for large data
 ```php
 use Smoren\EncryptionTools\Helpers\AsymmetricLargeDataEncryptionHelper;
 
